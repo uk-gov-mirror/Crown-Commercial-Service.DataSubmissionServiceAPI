@@ -71,7 +71,7 @@ module UrnLists
 
       uri = URI(base_url)
       uri.query = URI.encode_www_form(params)
-      
+
       request = Net::HTTP::Get.new(uri.to_s)
       request['Authorization'] = "Bearer #{token}"
       request['Accept'] = 'application/json'

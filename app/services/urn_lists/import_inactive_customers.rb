@@ -1,11 +1,12 @@
 module UrnLists
   class ImportInactiveCustomers
     BATCH_SIZE = 1000
-    
+
     def initialize(rows:)
       @rows = rows
     end
 
+    # rubocop:disable Rails/SkipsModelValidations
     def call
       formatted_rows.each_slice(BATCH_SIZE) do |batch|
         InactiveCustomer.insert_all(
@@ -14,6 +15,7 @@ module UrnLists
         )
       end
     end
+    # rubocop:enable Rails/SkipsModelValidations
 
     private
 
