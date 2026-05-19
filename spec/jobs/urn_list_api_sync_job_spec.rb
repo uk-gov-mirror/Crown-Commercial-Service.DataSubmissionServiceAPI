@@ -23,7 +23,7 @@ RSpec.describe UrnListApiSyncJob do
       ]
     end
 
-    let(:api_client_service) { double('UrnLists::ApiClient', fetch_rows: rows) }
+    let(:api_client_service) { double('UrnLists::ApiClient', fetch_customers: rows) }
     let(:import_customers_service) { double('UrnLists::ImportCustomers', call: rows.count) }
 
     before do
@@ -36,7 +36,7 @@ RSpec.describe UrnListApiSyncJob do
         described_class.perform_now
       end.to change(UrnList, :count).by(1)
 
-      expect(api_client_service).to have_received(:fetch_rows)
+      expect(api_client_service).to have_received(:fetch_customers)
       expect(import_customers_service).to have_received(:call)
 
       urn_list = UrnList.last
@@ -47,7 +47,7 @@ RSpec.describe UrnListApiSyncJob do
     end
 
     it 'marks the urn list as failed when the api call fails' do
-      allow(api_client_service).to receive(:fetch_rows).and_raise(StandardError.new('token failed'))
+      allow(api_client_service).to receive(:fetch_customers).and_raise(StandardError.new('token failed'))
 
       expect do
         described_class.perform_now

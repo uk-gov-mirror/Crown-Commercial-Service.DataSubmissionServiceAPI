@@ -6,9 +6,14 @@ module UrnLists
   class ApiClient
     class ApiError < StandardError; end
 
-    def fetch_rows
+    def fetch_customers
       token = fetch_access_token
       fetch_urn_list(token)
+    end
+
+    def fetch_inactive_customers
+      token = fetch_access_token
+      fetch_inactive_urn_list(token)
     end
 
     private
@@ -50,6 +55,32 @@ module UrnLists
       end
 
       raise ApiError, "Failed to fetch URN list: #{response.code}" unless response.is_a?(Net::HTTPSuccess)
+
+      rows = JSON.parse(response.body)
+      validate_rows!(rows)
+      rows
+    end
+
+    def fetch_inactive_urn_list(token)
+      base_url = 'https://apim.crowncommercial.gov.uk/website-data/manual/paths/invoke/%5Batt%5D.%5Bvw_RMIInactiveURNList%5D/'
+      params = {
+        'api-version' => '2016-10-01',
+        'sp' => '/triggers/manual/run',
+        'sv' => '1.0'
+      }
+
+      uri = URI(base_url)
+      uri.query = URI.encode_www_form(params)
+      
+      request = Net::HTTP::Get.new(uri.to_s)
+      request['Authorization'] = "Bearer #{token}"
+      request['Accept'] = 'application/json'
+
+      response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == 'https') do |http|
+        http.request(request)
+      end
+
+      raise ApiError, "Failed to fetch inactive URN list: #{response.code}" unless response.is_a?(Net::HTTPSuccess)
 
       rows = JSON.parse(response.body)
       validate_rows!(rows)

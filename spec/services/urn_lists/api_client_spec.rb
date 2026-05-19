@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe UrnLists::ApiClient do
-  describe '#fetch_rows' do
+  describe '#fetch_customers' do
     before do
       stub_request(:post, 'https://example.com/oauth/token')
         .with(
@@ -53,7 +53,7 @@ RSpec.describe UrnLists::ApiClient do
 
     it 'fetches and returns customer data' do
       client = described_class.new
-      customers = client.fetch_rows
+      customers = client.fetch_customers
 
       expect(customers.size).to eq(1)
       expect(customers.first['urn']).to eq(10009655)

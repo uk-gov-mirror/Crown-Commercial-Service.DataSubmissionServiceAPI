@@ -2,7 +2,7 @@ class UrnListApiSyncJob < ApplicationJob
   def perform
     urn_list = UrnList.create!(aasm_state: :pending, source: 'api_import')
 
-    rows = UrnLists::ApiClient.new.fetch_rows
+    rows = UrnLists::ApiClient.new.fetch_customers
     count = UrnLists::ImportCustomers.new(rows: rows).call
 
     urn_list.update!(
