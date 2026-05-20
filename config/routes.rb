@@ -88,6 +88,8 @@ as: :cancel_pending_email_change
     resources :frameworks, only: :index
     resources :framework_lots, only: :index
     resources :agreement_framework_lots, only: :index
+    resources :tasks, only: :index
+    resources :submissions, only: :index
   end
 
   namespace :admin do
