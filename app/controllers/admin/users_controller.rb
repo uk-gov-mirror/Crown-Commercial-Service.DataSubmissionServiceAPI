@@ -91,8 +91,8 @@ class Admin::UsersController < AdminController
     result = UpdateUserEmail.new(@user, new_email)
     if result.call
       flash[:notice] = I18n.t('errors.messages.success_updating_user_email_in_auth0')
-    elsif result.failure?
-      flash[:alert] = I18n.t('errors.messages.error_updating_user_email_in_auth0')
+    elsif result.errors
+      flash[:alert] = I18n.t('errors.messages.error_updating_user_email_in_auth0') + ": #{result.errors.full_messages.join(', ')}"
     end
     redirect_to admin_user_path(@user)
   end
