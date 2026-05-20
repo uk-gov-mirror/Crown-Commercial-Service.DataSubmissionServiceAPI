@@ -25,7 +25,7 @@ RSpec.describe UrnLists::ImportInactiveCustomers do
       expect(inactive_customer.inactive_urn).to eq(10009655)
       expect(inactive_customer.inactive_customer_name).to eq('Government Commercial Agency')
       expect(inactive_customer.date_made_inactive).to eq(Date.iso8601('2024-01-01'))
-      expect(inactive_customer.replacement_urn).to eq('10009656')
+      expect(inactive_customer.replacement_urn).to eq(10009656)
       expect(inactive_customer.replacement_customer_name).to eq('Another Organisation')
       expect(inactive_customer.replacement_post_code).to eq('AB1 2CD')
       expect(inactive_customer.replacement_status).to eq('active')
