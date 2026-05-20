@@ -1,15 +1,39 @@
 .govuk-grid-row
   .govuk-grid-column-two-thirds
     = link_to 'Back', admin_notifications_path, { class: 'govuk-back-link govuk-!-margin-bottom-5', title: 'Back to notifications' }
-
     = simple_form_for [:admin, @notification] do |form|
       %fieldset.govuk-fieldset
         %legend.govuk-fieldset__legend.govuk-fieldset__legend--xl
           %h1.govuk-fieldset__heading
             Create a new notification
 
-        = form.input :summary, hide_optional: true, input_html: { value: @published_notification&.summary }
-        = form.input :notification_message, label: 'Notification message', hide_optional: true, wrapper: :govuk_textarea_wrapper, input_html: { rows: '10', value: @published_notification&.notification_message }
+          = form.input :summary, 
+            hide_optional: true, 
+            input_html: { value: @notification.summary || @published_notification&.summary }
+
+          = form.input :notification_message, 
+            label: 'Notification message', 
+            hide_optional: true, 
+            wrapper: :govuk_textarea_wrapper, 
+            input_html: { rows: '10', value: @notification.notification_message || @published_notification&.notification_message }
+
+          .govuk-form-group{class: ("govuk-form-group--error" if @notification.errors[:stop_datetime].any?)}
+            %label.govuk-label{ for: "notification_stop_datetime" }
+              Unpublish on
+            
+            - if @notification.errors[:stop_datetime].any?
+              %span.govuk-error-message
+                %span.govuk-visually-hidden Error:
+                = @notification.errors[:stop_datetime].join(', ')
+
+            - current_date = @notification.stop_datetime || @published_notification&.stop_datetime
+            - current_date_london = current_date&.in_time_zone('Europe/London')
+            = form.datetime_local_field :stop_datetime, 
+              class: "govuk-input", 
+              value: current_date_london&.strftime("%Y-%m-%dT%H:%M")
+          %button.govuk-button.govuk-button--secondary{ type: "button", onclick: "document.getElementById('notification_stop_datetime').value = ''", class: "govuk-!-margin-top-1" }
+            Clear date
+
         %button#markdown-preview-btn{type: "button", class: 'govuk-button'} Preview
         = form.button :submit, value: 'Publish Notification', data: { disable_with: "Publish Notification" }
 
