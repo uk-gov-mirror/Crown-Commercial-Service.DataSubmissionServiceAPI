@@ -24,8 +24,16 @@ Rails.application.routes.draw do
     resources :users, only: %i[index] do
       collection do
         patch :update_name
+        patch :update_email
+        get :user_auth_logs
       end
     end
+
+    post 'email_verifications/verify_token', to: 'email_verifications#verification', as: :email_verification
+    post 'email_verifications', to: 'email_verifications#create', as: :generate_email_verification
+    get 'email_verifications/active_verification', to: 'email_verifications#active', as: :active_email_verification
+    delete 'email_verifications/cancel_pending_email_change', to: 'email_verifications#cancel_pending_email_change',
+as: :cancel_pending_email_change
 
     resources :suppliers, only: %i[index]
 
@@ -93,6 +101,8 @@ Rails.application.routes.draw do
         post :reactivate_user
         get :confirm_delete
         get :confirm_reactivate
+        get :edit_email
+        patch :update_email
       end
 
       collection do

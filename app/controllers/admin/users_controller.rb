@@ -1,5 +1,7 @@
 class Admin::UsersController < AdminController
-  before_action :find_user, only: %i[show edit update reactivate_user confirm_delete confirm_reactivate destroy]
+  before_action :find_user,
+                only: %i[show edit update reactivate_user confirm_delete confirm_reactivate destroy edit_email
+                         update_email]
 
   def index
     @users = User.search(params[:search]).page(params[:page])
@@ -73,6 +75,26 @@ class Admin::UsersController < AdminController
     result = UpdateUser.new(@user, user_params[:name]).call
     flash[:alert] = I18n.t('errors.messages.error_updating_user_in_auth0') if result.failure?
 
+    redirect_to admin_user_path(@user)
+  end
+
+  def edit_email; end
+
+  def update_email
+    new_email = user_params[:email]
+    if new_email == @user.email
+      flash[:notice] = I18n.t('errors.messages.error_updating_same_user_email_in_auth0')
+      redirect_to admin_user_path(@user)
+      return
+    end
+
+    result = UpdateUserEmail.new(@user, new_email)
+    if result.call
+      flash[:notice] = I18n.t('errors.messages.success_updating_user_email_in_auth0')
+    elsif result.errors
+      flash[:alert] =
+        I18n.t('errors.messages.error_updating_user_email_in_auth0') + ": #{result.errors.full_messages.join(', ')}"
+    end
     redirect_to admin_user_path(@user)
   end
 

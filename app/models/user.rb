@@ -1,6 +1,9 @@
 require './lib/auth0_api'
 
 class User < ApplicationRecord
+  has_one :email_change_request, lambda {
+    where(active: true).order(created_at: :desc)
+  }, class_name: 'EmailChangeRequest', dependent: :destroy, inverse_of: :user
   has_many :memberships, dependent: :destroy
   has_many :suppliers, through: :memberships
   has_many :submissions, through: :suppliers

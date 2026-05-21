@@ -1,4 +1,3 @@
----
 en:
   admin:
     frameworks:
@@ -46,4 +45,12 @@ en:
       invalid_dependent_field: '"%{value}" is not a valid %{attr} for the given %{parent_field_name} of "%{parent_field_value}". Please refer to the lookups tab in the template.'
       error_adding_user_to_auth0: 'There was an error adding the user to Auth0. Please try again.'
       error_updating_user_in_auth0: "There was an error updating this user's name in Auth0. Please try again."
+      error_updating_user_email_in_auth0: "There was an error updating this user's email in Auth0. Please try again."
       missing_template_file: 'Missing template file'
+      error_updating_same_user_email_in_auth0: "Email is unchanged."
+      success_updating_user_email_in_auth0: "Email updated successfully."
+  email_verifications:
+    already_verified: "This email address has already been verified for this user."
+    verification_sent: "A verification link has been sent: %{url} (expires at %{expires_at})"
+    invalid_or_expired_token: "Invalid or expired token."
+    verified_and_updated: "Email address verified and updated."

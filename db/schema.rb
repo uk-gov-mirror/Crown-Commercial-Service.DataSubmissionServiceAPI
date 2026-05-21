@@ -107,6 +107,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_13_130608) do
     t.index ["range_to"], name: "index_data_warehouse_exports_on_range_to"
   end
 
+  create_table "email_change_requests", force: :cascade do |t|
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "expires_at", precision: nil, null: false
+    t.string "new_email", null: false
+    t.string "token", null: false
+    t.datetime "updated_at", null: false
+    t.datetime "used_at", precision: nil
+    t.uuid "user_id", null: false
+    t.index ["active"], name: "index_email_change_requests_on_active"
+    t.index ["token"], name: "index_email_change_requests_on_token", unique: true
+    t.index ["user_id"], name: "index_email_change_requests_on_user_id"
+  end
+
   create_table "event_store_events", id: :serial, force: :cascade do |t|
     t.datetime "created_at", precision: nil, null: false
     t.text "data", null: false
@@ -312,6 +326,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_13_130608) do
   add_foreign_key "agreement_framework_lots", "agreements"
   add_foreign_key "agreement_framework_lots", "framework_lots"
   add_foreign_key "customer_effort_scores", "users"
+  add_foreign_key "email_change_requests", "users"
   add_foreign_key "framework_lots", "frameworks"
   add_foreign_key "memberships", "suppliers"
   add_foreign_key "submission_entries", "customers", column: "customer_urn", primary_key: "urn"
