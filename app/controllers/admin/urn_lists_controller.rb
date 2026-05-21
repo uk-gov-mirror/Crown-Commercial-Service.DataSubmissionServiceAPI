@@ -1,5 +1,5 @@
 class Admin::UrnListsController < AdminController
-  before_action :find_latest_list, only: %i[index download]
+  before_action :find_latest_list, only: %i[index]
 
   def index
     @urn_lists = UrnList.order(created_at: :desc).page(params[:page])
@@ -19,11 +19,6 @@ class Admin::UrnListsController < AdminController
     end
   rescue ActionController::ParameterMissing
     redirect_to new_admin_urn_list_path, alert: 'Please choose a file to upload'
-  end
-
-  def download
-    resp = s3_client.get_object(bucket: bucket, key: @latest_urn_list.file_key)
-    send_data resp.body.read, filename: @latest_urn_list.file_name.to_s
   end
 
   private
