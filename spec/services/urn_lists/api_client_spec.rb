@@ -120,7 +120,6 @@ RSpec.describe UrnLists::ApiClient do
             body: second_page_rows.to_json,
             headers: { 'Content-Type' => 'application/json' }
           )
-        
       end
 
       it 'fetches each page and returns combined rows' do

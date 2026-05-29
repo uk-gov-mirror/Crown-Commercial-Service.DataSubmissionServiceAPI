@@ -62,6 +62,7 @@ module UrnLists
       all_rows
     end
 
+    # rubocop:disable Metrics/ParameterLists
     def fetch_page(token:, base_url:, params:, top_count:, skip:, error_message:)
       uri = URI(base_url)
       uri.query = URI.encode_www_form(
@@ -84,7 +85,8 @@ module UrnLists
       rows = JSON.parse(response.body)
       validate_rows!(rows)
       rows
-    end 
+    end
+    # rubocop:enable Metrics/ParameterLists
 
     def fetch_access_token
       uri = URI.parse(ENV.fetch('MDM_API_TOKEN_URL'))
