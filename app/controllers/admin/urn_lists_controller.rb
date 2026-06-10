@@ -1,8 +1,12 @@
 class Admin::UrnListsController < AdminController
-  before_action :find_latest_list, only: %i[index]
-
   def index
-    @urn_lists = UrnList.order(created_at: :desc).page(params[:page])
+    @urn_lists = UrnList.order(created_at: :desc).page(params[:active_page]).per(25)
+    @inactive_customer_imports = InactiveCustomerImport.order(created_at: :desc).page(params[:inactive_page]).per(25)
+
+    respond_to do |format|
+      format.html
+      format.js
+    end
   end
 
   def new
@@ -25,10 +29,6 @@ class Admin::UrnListsController < AdminController
 
   def urn_list_params
     params.require(:urn_list).permit(:excel_file)
-  end
-
-  def find_latest_list
-    @latest_urn_list = UrnList.where(source: 'manual_upload', aasm_state: 'processed').order(created_at: :desc).first
   end
 
   def s3_client

@@ -18,3 +18,4 @@ inactive_urn_list_importer:
   cron: '0 20 * * * Europe/London'
   class: InactiveUrnListApiSyncJob
   queue: default
+  active_job: true

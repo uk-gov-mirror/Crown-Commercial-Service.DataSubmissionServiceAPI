@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_05_18_115711) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_05_131714) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "citext"
   enable_extension "pg_catalog.plpgsql"
@@ -160,6 +160,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_05_18_115711) do
     t.string "short_name", null: false
     t.index ["aasm_state"], name: "index_frameworks_on_aasm_state"
     t.index ["short_name"], name: "index_frameworks_on_short_name", unique: true
+  end
+
+  create_table "inactive_customer_imports", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
+    t.string "aasm_state"
+    t.datetime "completed_at"
+    t.datetime "created_at", null: false
+    t.integer "records_count"
+    t.datetime "updated_at", null: false
   end
 
   create_table "inactive_customers", id: :uuid, default: -> { "gen_random_uuid()" }, force: :cascade do |t|
