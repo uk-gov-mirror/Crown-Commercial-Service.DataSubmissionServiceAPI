@@ -26,7 +26,9 @@ RSpec.describe InactiveUrnListApiSyncJob do
 
     before do
       allow(UrnLists::ApiClient).to receive(:new).and_return(api_client_service)
-      allow(UrnLists::ImportInactiveCustomers).to receive(:new).with(rows: rows).and_return(import_inactive_customers_service)
+      allow(UrnLists::ImportInactiveCustomers)
+        .to receive(:new).with(rows: rows)
+        .and_return(import_inactive_customers_service)
     end
 
     it 'creates a pending inactive customer import, imports the rows, and marks it as processed' do
