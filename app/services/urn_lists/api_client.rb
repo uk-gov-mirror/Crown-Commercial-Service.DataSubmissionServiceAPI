@@ -14,8 +14,7 @@ module UrnLists
         params: {
           'api-version' => '2016-10-01',
           'sp' => '/triggers/manual/run',
-          'sv' => '1.0',
-          'filter' => "Published eq 'True'"
+          'sv' => '1.0'
         },
         error_message: 'Failed to fetch URN list'
       )
@@ -50,6 +49,8 @@ module UrnLists
           skip: skip,
           error_message: error_message
         )
+
+        Rails.logger.info("URN API page fetched: skip=#{skip}, rows=#{rows.count}, unique_urns=#{rows.map { |r| r['URN'] }.uniq.count}, first_urn=#{rows.first&.dig('URN')}, last_urn=#{rows.last&.dig('URN')}")
 
         break if rows.empty?
 
