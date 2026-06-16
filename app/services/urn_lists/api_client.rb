@@ -38,7 +38,7 @@ module UrnLists
       token = fetch_access_token
 
       all_rows = []
-      skip = 0
+      skip = 1
 
       loop do
         rows = fetch_page(
