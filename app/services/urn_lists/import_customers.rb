@@ -7,7 +7,7 @@ module UrnLists
     def call
       customers = build_customers
 
-      Rails.logger.info("======== IMPORT CUSTOMERS DEBUG ========")
+      Rails.logger.info('======== IMPORT CUSTOMERS DEBUG ========')
       Rails.logger.info("Rows received: #{rows.count}")
       Rails.logger.info("Customers built: #{customers.count}")
       Rails.logger.info("Unique URNs: #{customers.map(&:urn).uniq.count}")
@@ -71,7 +71,7 @@ module UrnLists
 
       urns_to_be_deleted = existing_urns - importing_urns
 
-      Rails.logger.info("======== SOFT DELETE CUSTOMERS DEBUG ========")
+      Rails.logger.info('======== SOFT DELETE CUSTOMERS DEBUG ========')
       Rails.logger.info("Existing URNs: #{existing_urns.count}")
       Rails.logger.info("Importing unique URNs: #{importing_urns.uniq.count}")
       Rails.logger.info("URNs to be soft deleted: #{urns_to_be_deleted.count}")
