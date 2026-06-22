@@ -10,3 +10,11 @@ kill_stuck_submissions:
   cron: '*/5 * * * *'
   class: KillStuckSubmissionsJob
   queue: default
+urn_list_importer:
+  cron: '0 19 * * * Europe/London'
+  class: UrnListApiSyncJob
+  queue: default
+inactive_urn_list_importer:
+  cron: '0 20 * * * Europe/London'
+  class: InactiveUrnListApiSyncJob
+  queue: default

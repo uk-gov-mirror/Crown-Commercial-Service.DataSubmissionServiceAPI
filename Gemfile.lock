@@ -351,6 +351,10 @@ GEM
     nokogiri (1.19.2)
       mini_portile2 (~> 2.8.2)
       racc (~> 1.4)
+    nokogiri (1.19.2-x86_64-linux-gnu)
+      racc (~> 1.4)
+    notifications-ruby-client (6.4.0)
+      jwt (>= 1.5, < 4)
     oauth2 (2.0.18)
       faraday (>= 0.17.3, < 4.0)
       jwt (>= 1.0, < 4.0)
@@ -621,7 +625,9 @@ GEM
     zeitwerk (2.7.5)
 
 PLATFORMS
+  aarch64-linux-musl
   ruby
+  x86_64-linux
 
 DEPENDENCIES
   aasm
@@ -659,6 +665,7 @@ DEPENDENCIES
   mutex_m (~> 0.3.0)
   net-http (>= 0.4.0)
   nokogiri (>= 1.18.9)
+  notifications-ruby-client (>= 6.4.0)
   omniauth-google-oauth2 (>= 1.2.2)
   omniauth-rails_csrf_protection (~> 2.0, >= 2.0.0)
   parslet

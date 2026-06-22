@@ -69,4 +69,60 @@ RSpec.describe '/v1' do
       expect(response.status).to eq 422
     end
   end
+
+  describe 'PATCH /v1/users/update_email' do
+    it 'returns 422 if email param is missing' do
+      user = FactoryBot.create(:user)
+      stub_auth0_token_request
+      stub_auth0_update_user_request(user)
+      patch '/v1/users/update_email',
+            headers: { 'X-Auth-Id' => JWT.encode(user.auth_id, 'test') },
+            params: { _jsonapi: {} }
+      expect(response.status).to eq 422
+      expect(json['errors']).not_to be_empty
+    end
+
+    it 'returns 422 if verification_request fails to save' do
+      user = FactoryBot.create(:user)
+      allow_any_instance_of(EmailChangeRequest).to receive(:save).and_return(false)
+      patch '/v1/users/update_email',
+            headers: { 'X-Auth-Id' => JWT.encode(user.auth_id, 'test') },
+            params: { _jsonapi: { email: 'newuser@example.com' } }
+      expect(response.status).to eq 422
+      expect(json['errors']).not_to be_empty
+    end
+    it 'updates the email of the current user' do
+      user = FactoryBot.create(:user)
+      stub_auth0_token_request
+      stub_auth0_update_user_request(user)
+
+      patch '/v1/users/update_email',
+            headers: { 'X-Auth-Id' => JWT.encode(user.auth_id, 'test') },
+            params: {
+              _jsonapi: {
+                email: 'newuser@example.com'
+              }
+            }
+
+      expect(response).to be_successful
+      expect(json['data']['type']).to eq('email_change_requests')
+      expect(json['data']['attributes']['new_email']).to eq('newuser@example.com')
+    end
+
+    it 'returns an error if the Auth0 update fails' do
+      user = FactoryBot.create(:user)
+      stub_auth0_token_request
+      stub_auth0_update_user_request_failure(user)
+
+      patch '/v1/users/update_email',
+            headers: { 'X-Auth-Id' => JWT.encode(user.auth_id, 'test') },
+            params: {
+              _jsonapi: {
+                email: 'newuser@example.com'
+              }
+            }
+
+      expect(response.status).to eq 200
+    end
+  end
 end

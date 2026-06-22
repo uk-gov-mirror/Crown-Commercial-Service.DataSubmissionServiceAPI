@@ -24,4 +24,14 @@ RSpec.feature 'Admin can upload a URN lists' do
 
     expect(UrnListImporterJob).to have_been_enqueued
   end
+
+  context 'without attaching a file' do
+    scenario 'displays an error' do
+      visit new_admin_urn_list_path
+
+      click_button 'Upload'
+
+      expect(page).to have_text 'Please choose a file to upload'
+    end
+  end
 end

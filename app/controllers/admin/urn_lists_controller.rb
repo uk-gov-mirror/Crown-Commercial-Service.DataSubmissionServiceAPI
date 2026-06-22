@@ -1,8 +1,8 @@
 class Admin::UrnListsController < AdminController
-  before_action :find_latest_list, only: %i[index download]
+  before_action :find_latest_list, only: %i[index]
 
   def index
-    @urn_lists = UrnList.order(created_at: :desc).all
+    @urn_lists = UrnList.order(created_at: :desc).page(params[:page])
   end
 
   def new
@@ -10,20 +10,15 @@ class Admin::UrnListsController < AdminController
   end
 
   def create
-    @urn_list = UrnList.new(urn_list_params)
+    @urn_list = UrnList.new(urn_list_params.merge(source: 'manual_upload'))
 
     if @urn_list.save
       UrnListImporterJob.perform_later(@urn_list)
 
-      return redirect_to admin_urn_lists_path
+      redirect_to admin_urn_lists_path
     end
-
-    render action: :new
-  end
-
-  def download
-    resp = s3_client.get_object(bucket: bucket, key: @latest_urn_list.file_key)
-    send_data resp.body.read, filename: @latest_urn_list.file_name.to_s
+  rescue ActionController::ParameterMissing
+    redirect_to new_admin_urn_list_path, alert: 'Please choose a file to upload'
   end
 
   private
@@ -33,7 +28,7 @@ class Admin::UrnListsController < AdminController
   end
 
   def find_latest_list
-    @latest_urn_list = UrnList.processed.order(created_at: :desc).first
+    @latest_urn_list = UrnList.where(source: 'manual_upload', aasm_state: 'processed').order(created_at: :desc).first
   end
 
   def s3_client

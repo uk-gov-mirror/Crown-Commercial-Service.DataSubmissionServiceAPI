@@ -1,5 +1,4 @@
 require 'tempfile'
-require 'csv'
 require 'aws-sdk-s3'
 require 'rubyXL'
 require 'rubyXL/convenience_methods/workbook'
@@ -8,97 +7,59 @@ require 'rubyXL/convenience_methods/worksheet'
 class UrnListImporterJob < ApplicationJob
   class AlreadyImported < StandardError; end
 
-  class InvalidFormat < StandardError; end
-
-  REQUIRED_COLUMNS = ['URN', 'CustomerName', 'PostCode', 'Sector'].freeze
-
   discard_on ActiveJob::DeserializationError
   discard_on AlreadyImported
 
-  discard_on InvalidFormat do |job, _error|
-    job.arguments.first.update!(aasm_state: :failed)
-  end
-
   retry_on Aws::S3::Errors::ServiceError
 
+  # rubocop:disable Metrics/AbcSize
   def perform(urn_list)
     raise AlreadyImported unless urn_list.pending?
 
     downloader = AttachedFileDownloader.new(urn_list.excel_file)
     downloader.download!
 
-    convert_to_csv(downloader.temp_file.path)
+    rows = UrnLists::ReadExcel.new(file_path: downloader.temp_file.path).call
+    count = UrnLists::ImportCustomers.new(rows: rows).call
 
-    customers = customers_from_csv
+    workbook_temp_file = build_workbook_temp_file(urn_list)
+    remove_published_column(urn_list, workbook_temp_file.path)
 
-    soft_delete!(customers)
-    upsert!(customers)
-
-    remove_published_column(urn_list, downloader.temp_file.path)
-
-    urn_list.update!(aasm_state: :processed)
-
-    downloader.temp_file.close
-    downloader.temp_file.unlink
+    urn_list.update!(
+      aasm_state: :processed,
+      completed_at: Time.current,
+      processed_count: count
+    )
+  rescue Aws::S3::Errors::ServiceError
+    raise
+  rescue UrnLists::ReadExcel::InvalidFormat
+    mark_failed!(urn_list)
+    raise
+  rescue StandardError => e
+    mark_failed!(urn_list) if urn_list.persisted? && urn_list.pending?
+    raise e
+  ensure
+    cleanup_downloader_temp_file(downloader&.temp_file)
+    cleanup_downloader_temp_file(workbook_temp_file)
   end
+  # rubocop:enable Metrics/AbcSize
 
   private
 
-  def convert_to_csv(path)
-    command = "in2csv --sheet=\"Customers\" --locale=en_GB --blanks --skipinitialspace #{path}"
-    command += " | csvcut -c 'URN,CustomerName,PostCode,Sector,Published'"
-    command += " > \"#{csv_temp_file.path}\""
-
-    result = Ingest::CommandRunner.new(command).run!
-    raise InvalidFormat if result.stderr.any? { |s| s.include?('Error') }
+  def build_workbook_temp_file(urn_list)
+    file = Tempfile.new(['urn_list_workbook', '.xlsx'])
+    file.binmode
+    file.write(urn_list.excel_file.download)
+    file.flush
+    file.rewind
+    file
   end
 
-  def csv_temp_file
-    @csv_temp_file ||= Tempfile.new('customer')
-  end
+  def cleanup_downloader_temp_file(file)
+    return unless file
 
-  def customers_from_csv
-    customers = []
-
-    CSV.foreach(csv_temp_file, headers: true) do |row|
-      raise InvalidFormat unless (row.headers & REQUIRED_COLUMNS) == REQUIRED_COLUMNS
-
-      customers << Customer.new(
-        name: row['CustomerName'],
-        urn: row['URN'].to_i,
-        postcode: row['PostCode'],
-        sector: (row['Sector'] == 'Central Government' ? :central_government : :wider_public_sector),
-        deleted: false,
-        published: (row['Published'] == 'False' ? false : true)
-      )
-    end
-
-    csv_temp_file.close
-    csv_temp_file.unlink
-
-    customers
-  end
-
-  def upsert!(customers)
-    Customer.transaction do
-      Customer.import(
-        customers,
-        batch_size: 100,
-        on_duplicate_key_update: {
-          conflict_target: [:urn],
-          columns: %i[name postcode sector deleted published]
-        }
-      )
-    end
-  end
-
-  def soft_delete!(customers)
-    existing_urns = Customer.pluck(:urn)
-    importing_urns = customers.map(&:urn)
-
-    urns_to_be_deleted = existing_urns - importing_urns
-
-    Customer.where(urn: urns_to_be_deleted).update(deleted: true)
+    file.close unless file.closed?
+    file.unlink
   end
 
   def remove_published_column(urn_list, path)
@@ -133,5 +94,13 @@ class UrnListImporterJob < ApplicationJob
 
     worksheet.delete_row(row_num)
     true
+  end
+
+  def mark_failed!(urn_list, processed_count: 0)
+    urn_list.update!(
+      aasm_state: :failed,
+      completed_at: Time.current,
+      processed_count: processed_count
+    )
   end
 end

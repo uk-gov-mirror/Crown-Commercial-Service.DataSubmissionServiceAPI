@@ -1,0 +1,49 @@
+.govuk-grid-row
+  .govuk-grid-column-two-thirds
+    = link_to 'Back', admin_urn_lists_path, { class: 'govuk-back-link govuk-!-margin-bottom-5', title: 'Back to URN list log' }
+
+    %h1.govuk-heading-xl Active URN list
+
+.govuk-grid-row
+  .govuk-grid-column-two-thirds
+    %h2.govuk-heading-s
+      Search
+    = form_with url: admin_urns_path, method: :get, local: true do
+      .ccs-search-form-group
+        %label.govuk-label.govuk-visually-hidden{for: 'search'} Search
+        %input#search{name: 'search', type: 'text', value: params[:search], class: ['govuk-!-width-two-thirds', 'govuk-input']}
+        %button.govuk-button Search
+
+  .govuk-grid-column-one-third
+    %nav.govuk-page-actions{"aria-labelledby" => "page-actions-title"}
+      %h2#page-actions-title.govuk-heading-s{"aria-label" => "Page actions"} Actions
+      %ul.govuk-page-actions--actions
+        %li.govuk-page-actions--action
+          = link_to 'Download Active URN list', download_admin_urns_path
+
+.govuk-grid-row
+  .govuk-grid-column-full
+    - if @customers.any?
+      %table.govuk-table{:class => 'govuk-!-margin-top-7'}
+        %thead.govuk-table__head
+          %tr.govuk-table__row
+            %th.govuk-table__header URN
+            %th.govuk-table__header Organisation name
+            %th.govuk-table__header Sector
+            %th.govuk-table__header Postcode
+            %th.govuk-table__header Published
+        %tbody.govuk-table__body
+          - @customers.each do |customer|
+            %tr.govuk-table__row
+              %td.govuk-table__cell= customer.urn
+              %td.govuk-table__cell= customer.name
+              %td.govuk-table__cell= customer.sector.titleize
+              %td.govuk-table__cell= customer.postcode
+              %td.govuk-table__cell= customer.published? ? 'true' : 'false'
+      %nav.pagination.ccs-pagination{"aria-label" => "Pagination", :role => "navigation"}
+        .ccs-pagination__summary= page_entries_info @customers, entry_name: "customer"
+        = paginate @customers
+
+    - else params[:search]
+      %p
+        No customers found for ‘#{params[:search]}’.
