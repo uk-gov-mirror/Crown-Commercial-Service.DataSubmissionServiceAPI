@@ -6,7 +6,7 @@ module UrnLists
   class ApiClient
     class ApiError < StandardError; end
 
-    TOP_COUNT = 1000
+    TOP_COUNT = 10_000
 
     def fetch_rows
       fetch_paginated_rows(
@@ -34,11 +34,12 @@ module UrnLists
 
     private
 
+    # rubocop:disable Metrics/AbcSize
     def fetch_paginated_rows(base_url:, params:, error_message:)
       token = fetch_access_token
 
       all_rows = []
-      skip = 1
+      skip = 0
 
       loop do
         rows = fetch_page(
@@ -50,17 +51,20 @@ module UrnLists
           error_message: error_message
         )
 
-        Rails.logger.info("URN API page fetched: skip=#{skip}, rows=#{rows.count}, unique_urns=#{rows.map do |r|
-          r['URN']
-        end.uniq.count}, first_urn=#{rows.first&.dig('URN')}, last_urn=#{rows.last&.dig('URN')}")
+        Rails.logger.info("URN API page fetched: skip=#{skip}, rows=#{rows.count}")
 
         break if rows.empty?
 
         all_rows.concat(rows)
-        break if rows.size < TOP_COUNT
+        break if rows.size < TOP_COUNT - 1
 
         skip += TOP_COUNT
       end
+
+      urns = all_rows.map { |row| row['URN'] || row['urn'] }.compact
+      Rails.logger.info("Fetched rows: #{all_rows.count}")
+      Rails.logger.info("Fetched URNs: #{urns.count}")
+      Rails.logger.info("Fetched unique URNs: #{urns.uniq.count}")
 
       all_rows
     end
@@ -68,28 +72,36 @@ module UrnLists
     # rubocop:disable Metrics/ParameterLists
     def fetch_page(token:, base_url:, params:, top_count:, skip:, error_message:)
       uri = URI(base_url)
-      uri.query = URI.encode_www_form(
-        params.merge(
-          'TopCount' => top_count,
-          'SkipCount' => skip
-        )
-      )
+
+      query_params = {
+        'SkipCount' => skip,
+        'TopCount' => top_count
+      }.merge(params)
+
+      uri.query = URI.encode_www_form(query_params)
+
+      Rails.logger.info("Fetching URN API page: #{uri}")
 
       request = Net::HTTP::Get.new(uri.to_s)
       request['Authorization'] = "Bearer #{token}"
-      request['Accept'] = 'application/json'
 
       response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == 'https') do |http|
         http.request(request)
       end
 
+      Rails.logger.info("URN API response: #{response.code}")
+      Rails.logger.info("URN API response content type: #{response['Content-Type']}")
+      Rails.logger.info("URN API response body: #{response.body.bytesize}")
+
       raise ApiError, "#{error_message}: #{response.code}" unless response.is_a?(Net::HTTPSuccess)
 
-      rows = JSON.parse(response.body)
+      body = JSON.parse(response.body)
+      rows = body.is_a?(Hash) ? body.fetch('value') : body
       validate_rows!(rows)
       rows
     end
     # rubocop:enable Metrics/ParameterLists
+    # rubocop:enable Metrics/AbcSize
 
     def fetch_access_token
       uri = URI.parse(ENV.fetch('MDM_API_TOKEN_URL'))
@@ -114,11 +126,11 @@ module UrnLists
     end
 
     def active_urns_url
-      'https://apim.crowncommercial.gov.uk/website-data/manual/paths/invoke/%5Batt%5D.%5Bvw_RMIActiveURNList%5D/'
+      'https://apim.crowncommercial.gov.uk/mdm-api-service/spend-data/%5Bdbo%5D.%5BRMIActiveURNList%5D/'
     end
 
     def inactive_urns_url
-      'https://apim.crowncommercial.gov.uk/website-data/manual/paths/invoke/%5Batt%5D.%5Bvw_RMIInactiveURNList%5D/'
+      'https://apim.crowncommercial.gov.uk/mdm-api-service/spend-data/%5Bdbo%5D.%5BRMIInActiveURNList%5D/'
     end
   end
 end
