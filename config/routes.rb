@@ -175,11 +175,13 @@ as: :cancel_pending_email_change
       end
     end
 
-    resources :urn_lists, only: %i[index new create] do
-      member do
+    resources :urns, only: %i[index] do
+      collection do
         get :download
       end
     end
+
+    resources :urn_lists, only: %i[index new create]
 
     resources :downloads, only: %i[index show new]
 
