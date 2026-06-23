@@ -59,7 +59,7 @@ module UrnLists
         skip += TOP_COUNT
       end
 
-      urns = all_rows.map { |row| row['URN'] || row['urn'] }.compact
+      all_rows.map { |row| row['URN'] || row['urn'] }.compact
 
       all_rows
     end

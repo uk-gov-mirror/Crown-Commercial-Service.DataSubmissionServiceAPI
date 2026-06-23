@@ -18,7 +18,7 @@ module UrnLists
     attr_reader :rows
 
     def build_customers
-      customers = rows.map do |row|
+      rows.map do |row|
         next row if row.is_a?(Customer)
 
         Customer.new(
@@ -30,8 +30,6 @@ module UrnLists
           published: normalize_published(row['Published'])
         )
       end
-
-      customers
     end
 
     def normalize_sector(value)
