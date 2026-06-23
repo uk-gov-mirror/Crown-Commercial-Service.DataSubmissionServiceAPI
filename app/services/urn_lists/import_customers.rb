@@ -6,6 +6,7 @@ module UrnLists
 
     def call
       customers = build_customers
+
       soft_delete!(customers)
       upsert!(customers)
 

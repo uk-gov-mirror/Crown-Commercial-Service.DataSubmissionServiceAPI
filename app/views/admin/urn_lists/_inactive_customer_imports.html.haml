@@ -1,0 +1,13 @@
+%table.govuk-table{:class => 'govuk-!-margin-top-7'}
+  %thead.govuk-table__head
+    %tr.govuk-table__row
+      %th.govuk-table__header Sync Datetime
+      %th.govuk-table__header Status
+  %tbody.govuk-table__body
+    - @inactive_customer_imports.each do |import|
+      %tr.govuk-table__row
+        %td.govuk-table__cell= import.created_at
+        %td.govuk-table__cell= import.aasm_state
+%nav.pagination.ccs-pagination{"aria-label" => "Pagination", :role => "navigation"}
+  #inactive_audit_log_pagination_summary.ccs-pagination__summary= page_entries_info @inactive_customer_imports, entry_name: "import"
+  #inactive_audit_log_pagination= paginate @inactive_customer_imports, :param_name => "inactive_page", remote: true
