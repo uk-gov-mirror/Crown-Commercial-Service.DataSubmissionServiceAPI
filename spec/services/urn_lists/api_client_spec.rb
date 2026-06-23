@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe UrnLists::ApiClient do
   describe '#fetch_rows' do
     let(:top_count) { described_class::TOP_COUNT }
-    let(:base_url) { 'https://apim.crowncommercial.gov.uk/website-data/manual/paths/invoke/%5Batt%5D.%5Bvw_RMIActiveURNList%5D/' }
+    let(:base_url) { 'https://apim.crowncommercial.gov.uk/mdm-api-service/spend-data/%5Bdbo%5D.%5BRMIActiveURNList%5D/' }
     let(:common_params) do
       {
         'api-version' => '2016-10-01',
@@ -14,7 +14,7 @@ RSpec.describe UrnLists::ApiClient do
 
     let(:request_headers) do
       {
-        'Accept' => 'application/json',
+        'Accept' => '*/*',
         'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
         'Authorization' => 'Bearer abc123',
         'User-Agent' => 'Ruby'
@@ -48,7 +48,7 @@ RSpec.describe UrnLists::ApiClient do
     end
 
     it 'fetches and returns customer data' do
-      stub_request(:get, "#{base_url}?SkipCount=1&TopCount=#{top_count}&#{common_params.to_query}")
+      stub_request(:get, "#{base_url}?SkipCount=0&TopCount=#{top_count}&#{common_params.to_query}")
         .with(headers: request_headers)
         .to_return(
           status: 200,
@@ -101,7 +101,7 @@ RSpec.describe UrnLists::ApiClient do
       end
 
       before do
-        stub_request(:get, "#{base_url}?SkipCount=1&TopCount=#{top_count}&#{common_params.to_query}")
+        stub_request(:get, "#{base_url}?SkipCount=0&TopCount=#{top_count}&#{common_params.to_query}")
           .with(headers: request_headers)
           .to_return(
             status: 200,
@@ -109,7 +109,7 @@ RSpec.describe UrnLists::ApiClient do
             headers: { 'Content-Type' => 'application/json' }
           )
 
-        stub_request(:get, "#{base_url}?SkipCount=#{top_count + 1}&TopCount=#{top_count}&#{common_params.to_query}")
+        stub_request(:get, "#{base_url}?SkipCount=#{top_count}&TopCount=#{top_count}&#{common_params.to_query}")
           .with(headers: request_headers)
           .to_return(
             status: 200,

@@ -7,10 +7,6 @@ module UrnLists
     def call
       customers = build_customers
 
-      Rails.logger.info('======== IMPORT CUSTOMERS DEBUG ========')
-      Rails.logger.info("Rows received: #{rows.count}")
-      Rails.logger.info("Customers built: #{customers.count}")
-      Rails.logger.info("Unique URNs: #{customers.map(&:urn).uniq.count}")
       soft_delete!(customers)
       upsert!(customers)
 
@@ -22,8 +18,6 @@ module UrnLists
     attr_reader :rows
 
     def build_customers
-      Rails.logger.info("Rows entering build_customers: #{rows.count}")
-
       customers = rows.map do |row|
         next row if row.is_a?(Customer)
 
@@ -36,8 +30,6 @@ module UrnLists
           published: normalize_published(row['Published'])
         )
       end
-
-      Rails.logger.info("Customers after build_customers: #{customers.count}")
 
       customers
     end
@@ -70,11 +62,6 @@ module UrnLists
       importing_urns = customers.map(&:urn)
 
       urns_to_be_deleted = existing_urns - importing_urns
-
-      Rails.logger.info('======== SOFT DELETE CUSTOMERS DEBUG ========')
-      Rails.logger.info("Existing URNs: #{existing_urns.count}")
-      Rails.logger.info("Importing unique URNs: #{importing_urns.uniq.count}")
-      Rails.logger.info("URNs to be soft deleted: #{urns_to_be_deleted.count}")
 
       Customer.where(urn: urns_to_be_deleted).update(deleted: true)
     end

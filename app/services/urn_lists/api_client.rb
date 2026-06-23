@@ -51,8 +51,6 @@ module UrnLists
           error_message: error_message
         )
 
-        Rails.logger.info("URN API page fetched: skip=#{skip}, rows=#{rows.count}")
-
         break if rows.empty?
 
         all_rows.concat(rows)
@@ -62,9 +60,6 @@ module UrnLists
       end
 
       urns = all_rows.map { |row| row['URN'] || row['urn'] }.compact
-      Rails.logger.info("Fetched rows: #{all_rows.count}")
-      Rails.logger.info("Fetched URNs: #{urns.count}")
-      Rails.logger.info("Fetched unique URNs: #{urns.uniq.count}")
 
       all_rows
     end
@@ -80,18 +75,12 @@ module UrnLists
 
       uri.query = URI.encode_www_form(query_params)
 
-      Rails.logger.info("Fetching URN API page: #{uri}")
-
       request = Net::HTTP::Get.new(uri.to_s)
       request['Authorization'] = "Bearer #{token}"
 
       response = Net::HTTP.start(uri.hostname, uri.port, use_ssl: uri.scheme == 'https') do |http|
         http.request(request)
       end
-
-      Rails.logger.info("URN API response: #{response.code}")
-      Rails.logger.info("URN API response content type: #{response['Content-Type']}")
-      Rails.logger.info("URN API response body: #{response.body.bytesize}")
 
       raise ApiError, "#{error_message}: #{response.code}" unless response.is_a?(Net::HTTPSuccess)
 
