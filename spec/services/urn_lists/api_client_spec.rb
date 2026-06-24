@@ -3,6 +3,23 @@ require 'rails_helper'
 RSpec.describe UrnLists::ApiClient do
   describe '#fetch_rows' do
     let(:top_count) { described_class::TOP_COUNT }
+    let(:base_url) { 'https://apim.crowncommercial.gov.uk/mdm-api-service/spend-data/%5Bdbo%5D.%5BRMIActiveURNList%5D/' }
+    let(:common_params) do
+      {
+        'api-version' => '2016-10-01',
+        'sp' => '/triggers/manual/run',
+        'sv' => '1.0'
+      }
+    end
+
+    let(:request_headers) do
+      {
+        'Accept' => '*/*',
+        'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
+        'Authorization' => 'Bearer abc123',
+        'User-Agent' => 'Ruby'
+      }
+    end
 
     before do
       stub_request(:post, 'https://example.com/oauth/token')
@@ -23,15 +40,16 @@ RSpec.describe UrnLists::ApiClient do
           headers: { 'Content-Type' => 'application/json' }
         )
 
-      stub_request(:get, "https://apim.crowncommercial.gov.uk/website-data/manual/paths/invoke/%5Batt%5D.%5Bvw_RMIActiveURNList%5D/?SkipCount=0&TopCount=1000&api-version=2016-10-01&filter=Published%20eq%20'True'&sp=/triggers/manual/run&sv=1.0")
-        .with(
-          headers: {
-            'Accept' => 'application/json',
-            'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
-            'Authorization' => 'Bearer abc123',
-            'User-Agent' => 'Ruby'
-          }
-        )
+      allow(ENV).to receive(:fetch).and_call_original
+      allow(ENV).to receive(:fetch).with('MDM_API_TOKEN_URL').and_return('https://example.com/oauth/token')
+      allow(ENV).to receive(:fetch).with('MDM_API_CLIENT_ID').and_return('test_client_id')
+      allow(ENV).to receive(:fetch).with('MDM_API_CLIENT_SECRET').and_return('test_client_secret')
+      allow(ENV).to receive(:fetch).with('MDM_API_SCOPE').and_return('test_scope')
+    end
+
+    it 'fetches and returns customer data' do
+      stub_request(:get, "#{base_url}?SkipCount=0&TopCount=#{top_count}&#{common_params.to_query}")
+        .with(headers: request_headers)
         .to_return(
           status: 200,
           body: [
@@ -46,14 +64,6 @@ RSpec.describe UrnLists::ApiClient do
           headers: { 'Content-Type' => 'application/json' }
         )
 
-      allow(ENV).to receive(:fetch).and_call_original
-      allow(ENV).to receive(:fetch).with('MDM_API_TOKEN_URL').and_return('https://example.com/oauth/token')
-      allow(ENV).to receive(:fetch).with('MDM_API_CLIENT_ID').and_return('test_client_id')
-      allow(ENV).to receive(:fetch).with('MDM_API_CLIENT_SECRET').and_return('test_client_secret')
-      allow(ENV).to receive(:fetch).with('MDM_API_SCOPE').and_return('test_scope')
-    end
-
-    it 'fetches and returns customer data' do
       client = described_class.new
       customers = client.fetch_rows
 
@@ -91,30 +101,16 @@ RSpec.describe UrnLists::ApiClient do
       end
 
       before do
-        stub_request(:get, "https://apim.crowncommercial.gov.uk/website-data/manual/paths/invoke/%5Batt%5D.%5Bvw_RMIActiveURNList%5D/?TopCount=#{top_count}&SkipCount=0&api-version=2016-10-01&filter=Published%20eq%20'True'&sp=/triggers/manual/run&sv=1.0")
-          .with(
-            headers: {
-              'Accept' => 'application/json',
-              'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
-              'Authorization' => 'Bearer abc123',
-              'User-Agent' => 'Ruby'
-            }
-          )
+        stub_request(:get, "#{base_url}?SkipCount=0&TopCount=#{top_count}&#{common_params.to_query}")
+          .with(headers: request_headers)
           .to_return(
             status: 200,
             body: first_page_rows.to_json,
             headers: { 'Content-Type' => 'application/json' }
           )
 
-        stub_request(:get, "https://apim.crowncommercial.gov.uk/website-data/manual/paths/invoke/%5Batt%5D.%5Bvw_RMIActiveURNList%5D/?TopCount=#{top_count}&SkipCount=#{top_count}&api-version=2016-10-01&filter=Published%20eq%20'True'&sp=/triggers/manual/run&sv=1.0")
-          .with(
-            headers: {
-              'Accept' => 'application/json',
-              'Accept-Encoding' => 'gzip;q=1.0,deflate;q=0.6,identity;q=0.3',
-              'Authorization' => 'Bearer abc123',
-              'User-Agent' => 'Ruby'
-            }
-          )
+        stub_request(:get, "#{base_url}?SkipCount=#{top_count}&TopCount=#{top_count}&#{common_params.to_query}")
+          .with(headers: request_headers)
           .to_return(
             status: 200,
             body: second_page_rows.to_json,

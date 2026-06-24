@@ -12,7 +12,7 @@ RSpec.feature 'Admin can upload a URN lists' do
 
   scenario 'uploading a URN list' do
     visit admin_urn_lists_path
-    click_link 'Add a new URN list'
+    click_link 'Add a new Active URN list'
 
     expect(page).to have_text 'Upload a new URN list'
 

@@ -14,6 +14,8 @@ module UrnLists
           unique_by: :index_inactive_customers_on_inactive_urn
         )
       end
+
+      rows.count
     end
     # rubocop:enable Rails/SkipsModelValidations
 

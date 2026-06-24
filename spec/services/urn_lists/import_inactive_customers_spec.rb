@@ -17,9 +17,13 @@ RSpec.describe UrnLists::ImportInactiveCustomers do
     end
 
     it 'imports inactive customers into the database' do
+      result = nil
+
       expect do
-        described_class.new(rows: rows).call
+        result = described_class.new(rows: rows).call
       end.to change(InactiveCustomer, :count).by(1)
+
+      expect(result).to eq(rows.count)
 
       inactive_customer = InactiveCustomer.last
       expect(inactive_customer.inactive_urn).to eq(10009655)
@@ -45,6 +49,8 @@ RSpec.describe UrnLists::ImportInactiveCustomers do
       expect do
         described_class.new(rows: rows).call
       end.not_to change(InactiveCustomer, :count)
+
+      expect(described_class.new(rows: rows).call).to eq(rows.count)
     end
   end
 end
