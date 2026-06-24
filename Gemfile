@@ -91,7 +91,8 @@ gem 'rubyXL', '~> 3.4', '>= 3.4.28'
 # SOAP-related libraries for Workday integration
 gem 'lolsoap', '>= 0.11.0', require: false
 gem 'akami', '>= 1.3.2', require: false
-gem 'http', '>= 5.2.0'
+# gem 'http', '>= 5.2.0'
+gem 'http', '5.3.1'
 
 # Used for FDL testing (see FDL::Validations::Test)
 gem 'hashdiff', require: false
