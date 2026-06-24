@@ -41,7 +41,7 @@ gem 'rails_event_store', '~> 2.18', '>= 2.18.0'
 gem 'redcarpet', '~> 3.6'
 
 # Auth0
-gem 'auth0', '~> 5.1', '>= 5.1.2', require: false
+gem 'auth0', '~> 5.14', '>= 5.14.2', require: false
 
 # Google Login
 gem 'omniauth-google-oauth2', '>= 1.2.2'
@@ -91,7 +91,8 @@ gem 'rubyXL', '~> 3.4', '>= 3.4.28'
 # SOAP-related libraries for Workday integration
 gem 'lolsoap', '>= 0.11.0', require: false
 gem 'akami', '>= 1.3.2', require: false
-gem 'http', '>= 4.0.0'
+# gem 'http', '>= 5.2.0'
+gem 'http', '5.3.1'
 
 # Used for FDL testing (see FDL::Validations::Test)
 gem 'hashdiff', require: false
@@ -135,7 +136,7 @@ group :test do
   gem 'shoulda-matchers', '~> 7.0', '>= 7.0.1'
   gem 'capybara', '~> 3.40', '>= 3.40.0'
   gem 'climate_control'
-  gem 'webmock', '>= 3.24.0'
-  gem 'launchy', '>= 2.4.3'
+  gem 'webmock', '>= 3.25.2'
+  gem 'launchy', '>= 3.0.0'
   gem 'simplecov', '~> 0.21.2'
 end
