@@ -1,0 +1,8 @@
+-if params[:active_page]
+  $('#active-urn-lists-table').html("#{j (render partial: 'active_urn_lists', locals: {urn_lists: @urn_lists})}")
+  $('#active_audit_log_pagination').html("#{j (paginate(@urn_lists, :param_name => "active_page", :remote => true).to_s)}");
+  $('#active_audit_log_pagination_summary').html("#{j (page_entries_info(@urn_lists, entry_name: "URN list").to_s)}");
+-if params[:inactive_page]
+  $('#inactive-customer-imports-table').html("#{j (render partial: 'inactive_customer_imports', locals: {imports: @inactive_customer_imports})}")
+  $('#inactive_audit_log_pagination').html("#{j (paginate(@inactive_customer_imports, :param_name => "inactive_page", :remote => true).to_s)}");
+  $('#inactive_audit_log_pagination_summary').html("#{j (page_entries_info(@inactive_customer_imports, entry_name: "import").to_s)}");

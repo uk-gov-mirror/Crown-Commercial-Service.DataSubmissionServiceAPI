@@ -14,7 +14,9 @@ urn_list_importer:
   cron: '0 19 * * * Europe/London'
   class: UrnListApiSyncJob
   queue: default
+  active_job: true
 inactive_urn_list_importer:
   cron: '0 20 * * * Europe/London'
   class: InactiveUrnListApiSyncJob
   queue: default
+  active_job: true
