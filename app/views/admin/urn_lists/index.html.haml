@@ -8,25 +8,25 @@
       %h2#page-actions-title.govuk-heading-s{"aria-label" => "Page actions"} Actions
       %ul.govuk-page-actions--actions
         %li.govuk-page-actions--action
-          = link_to 'Add a new URN list', new_admin_urn_list_path
-        - if @latest_urn_list.present?
-          %li.govuk-page-actions--action
-            = link_to 'Download URN list', download_admin_urn_list_path(@latest_urn_list, disposition: "attachment"), {'aria-label' => 'Download latest URN list'}
+          = link_to 'Add a new Active URN list', new_admin_urn_list_path
+        %li.govuk-page-actions--action
+          = link_to 'View Active URN list', admin_urns_path
 
 .govuk-grid-row
   .govuk-grid-column-full
-    - if @urn_lists.present?
-      %table.govuk-table{:class => 'govuk-!-margin-top-7'}
-        %thead.govuk-table__head
-          %tr.govuk-table__row
-            %th.govuk-table__header Filename
-            %th.govuk-table__header Upload Date
-            %th.govuk-table__header Status
-        %tbody.govuk-table__body
-          - @urn_lists.each do |list|
-            %tr.govuk-table__row
-              %td.govuk-table__cell= list.excel_file.filename
-              %td.govuk-table__cell= list.created_at
-              %td.govuk-table__cell= list.aasm_state
-
-
+    .govuk-tabs{"data-module" => "govuk-tabs"}
+      %h2.govuk-tabs__title
+        Contents
+      %ul.govuk-tabs__list
+        %li.govuk-tabs__list-item.govuk-tabs__list-item--selected
+          %a.govuk-tabs__tab{href: "#active"}
+            Active
+        %li.govuk-tabs__list-item
+          %a.govuk-tabs__tab{href: "#inactive"}
+            Inactive
+      #active.govuk-tabs__panel      
+        - if @urn_lists.present?
+          .results{id: 'active-urn-lists-table'}= render 'active_urn_lists', urn_lists: @urn_lists
+      #inactive.govuk-tabs__panel
+        - if @inactive_customer_imports.present?
+          .results{id: 'inactive-customer-imports-table'}= render 'inactive_customer_imports', imports: @inactive_customer_imports

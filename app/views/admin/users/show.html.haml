@@ -1,3 +1,15 @@
+- if @user.email_change_request&.token.present?
+  .govuk-notification-banner{"aria-labelledby" => "govuk-notification-banner-title", "data-module" => "govuk-notification-banner", :role => "region"}
+    .govuk-notification-banner__header
+      %h2#govuk-notification-banner-title.govuk-notification-banner__title
+        Important
+    .govuk-notification-banner__content
+      %p.govuk-notification-banner__heading
+        User has a pending action to verify your new email address
+        = @user.email_change_request.new_email
+        -# = succeed "." do
+        -#   = link_to 'Resend email', resend_email_verification_path(email: @user.new_email), method: :post, class: 'govuk-notification-banner__link'
+
 .govuk-grid-row
   .govuk-grid-column-two-thirds
     = link_to 'Back', admin_users_path, { class: 'govuk-back-link govuk-!-margin-bottom-5', title: 'Back to users' }
@@ -20,6 +32,8 @@
             = link_to 'Deactivate user', confirm_delete_admin_user_path(@user)
           %li.govuk-page-actions--action
             = link_to 'Update user name', edit_admin_user_path(@user)
+          %li.govuk-page-actions--action
+            = link_to 'Update user email', edit_email_admin_user_path(@user)
         - else
           %li.govuk-page-actions--action
             = link_to 'Reactivate user', confirm_reactivate_admin_user_path(@user)

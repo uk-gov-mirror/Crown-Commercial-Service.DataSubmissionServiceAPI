@@ -9,6 +9,33 @@ RSpec.describe 'Admin Notifications', type: :request do
     get '/auth/google_oauth2/callback'
   end
 
+  describe '#create' do
+    around do |example|
+      travel_to(Time.utc(2026, 4, 20, 12, 0, 0)) { example.run }
+    end
+
+    it 'stores stop_datetime as Europ/London local time converted to UTC' do
+      london_input = '2026-04-20T14:15:00' # 2:15 PM London time on April 20, 2026
+
+      expect do
+        post admin_notifications_path, params: {
+          notification: {
+            summary: 'Test Notification',
+            notification_message: 'This is a test notification.',
+            stop_datetime: london_input
+          }
+        }
+      end.to change(Notification, :count).by(1)
+
+      notification = Notification.order(published_at: :desc).first
+
+      expected_time = ActiveSupport::TimeZone['Europe/London'].parse(london_input)
+
+      expect(notification.stop_datetime).to eq(expected_time)
+      expect(notification.stop_datetime.utc).to eq(expected_time.utc)
+    end
+  end
+
   describe '#preview' do
     it 'renders the Markdown content as HTML' do
       markdown_content = '**Bold Text**'
