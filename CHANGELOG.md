@@ -1,5 +1,29 @@
 # Change Log
 
+## [release-177] - 2026-07-13
+
+- [Snyk] Security upgrade rails from 8.1.2 to 8.1.2.1
+- [Snyk] Security upgrade rspec-rails from 8.0.3 to 8.0.4
+- [Snyk] Security upgrade omniauth-google-oauth2 from 1.2.1 to 1.2.2
+- NRMI-295: Improve urn upload error handling
+- NRMI-59: set up nightly api import of active urns
+- NRMI-298: update urn import audit log
+- NRMI-11: add stop time to notifications
+- NRMI-2: GET submissions endpoint
+- NRMI-3: GET tasks endpoint
+- NRMI-289: update user email
+- NRMI-302: Integrate Gov Notify
+- NRMI-171: display previous Auth0 user logins
+- NRMI-162: feed inactive URN data into RMI
+- NRMI-363: searchable active URN list view and new download link
+- NRMI-384: update api syncs to account for pagination
+- [Snyk] Security upgrade notifications-ruby-client from 6.3.0 to 6.4.0
+- NRMI-391: correct issue causing missing urns
+- NRMI-362: inactive urn audit log
+- [Snyk] Security upgrade ruby from 3.4.8-alpine to 3.4.9-alpine
+- [Snyk] Security upgrade auth0 from 5.14.1 to 5.18.1
+- NRMI 393: delete old CSVs from migrate dir
+
 ## [release-176] - 2026-03-31
 
 - NRMI-258: GCA header and footer updates
@@ -1170,6 +1194,7 @@ this should have been released in release 45 but wasn't actually merged
 
 Initial release
 
+[release-177]: https://github.com/Crown-Commercial-Service/DataSubmissionServiceAPI/compare/release-176...release-177
 [release-176]: https://github.com/Crown-Commercial-Service/DataSubmissionServiceAPI/compare/release-175...release-176
 [release-175]: https://github.com/Crown-Commercial-Service/DataSubmissionServiceAPI/compare/release-174...release-175
 [release-174]: https://github.com/Crown-Commercial-Service/DataSubmissionServiceAPI/compare/release-173...release-174
