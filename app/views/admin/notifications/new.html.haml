@@ -31,6 +31,8 @@
             = form.datetime_local_field :stop_datetime, 
               class: "govuk-input", 
               value: current_date_london&.strftime("%Y-%m-%dT%H:%M")
+            %p.govuk-hint{class: 'govuk-!-margin-top-1'}
+              (!) Note: the time set above is local time (GMT/BST), not UTC.
           %button.govuk-button.govuk-button--secondary{ type: "button", onclick: "document.getElementById('notification_stop_datetime').value = ''", class: "govuk-!-margin-top-1" }
             Clear date
 
@@ -39,6 +41,6 @@
 
     #preview-container.govuk-visually-hidden
       %details.govuk-details
-        %summary.govuk-details__summary.govuk-heading-m
+        %summary.govuk-details__summary.govuk-heading-m{"aria-label" => "Notification preview"}
           %span#summary-preview.govuk-details__summary-text
         #markdown-preview.govuk-details__text
