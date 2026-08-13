@@ -36,6 +36,6 @@ class DeactivateUser
   private
 
   def lock_linked_suppliers!
-    user.suppliers.lock.load 
+    user.suppliers.lock.load
   end
 end

@@ -78,8 +78,10 @@ class V1::UsersController < ApiController
     user = User.find_by!(auth_id: current_auth_id)
 
     unless user.can_deactivate?
+      # rubocop:disable Layout/LineLength
       return render jsonapi_errors: { user: ['Cannot be deactivated because they are the only user associated with their suppliers'] },
-             status: :unprocessable_entity
+                    status: :unprocessable_entity
+      # rubocop:enable Layout/LineLength
     end
 
     result = DeactivateUser.new(user: user).call
