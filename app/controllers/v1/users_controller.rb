@@ -73,4 +73,22 @@ class V1::UsersController < ApiController
 
     render jsonapi: objects, class: { OpenStruct: SerializableUserAuthLog }, status: :ok
   end
+
+  def deactivate
+    user = User.find_by!(auth_id: current_auth_id)
+
+    unless user.can_deactivate?
+      return render jsonapi_errors: { user: ['Cannot be deactivated because they are the only user associated with their suppliers'] },
+             status: :unprocessable_entity
+    end
+
+    result = DeactivateUser.new(user: user).call
+
+    if result.success?
+      render jsonapi: user, status: :ok
+    else
+      render jsonapi_errors: { user: ['Could not be deactivated'] },
+             status: :unprocessable_entity
+    end
+  end
 end

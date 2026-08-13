@@ -53,6 +53,57 @@ RSpec.describe User, type: :model do
     end
   end
 
+  describe '#can_deactivate?' do
+    subject(:can_deactivate?) { user.can_deactivate? }
+
+    let(:user) { FactoryBot.create(:user) }
+
+    context 'when the user is the only active user for a supplier' do
+      before do
+        supplier = FactoryBot.create(:supplier)
+        user.suppliers << supplier
+      end
+
+      it { is_expected.to be_falsy }
+    end
+
+    context 'when the user is not the only active user for a supplier' do
+      before do
+        supplier = FactoryBot.create(:supplier)
+        user.suppliers << supplier
+        other_user = FactoryBot.create(:user)
+        other_user.suppliers << supplier
+      end
+
+      it { is_expected.to be_truthy }
+    end
+
+    context 'when another linked user is inactive' do
+      before do
+        supplier = FactoryBot.create(:supplier)
+        user.suppliers << supplier
+        other_user = FactoryBot.create(:user, :inactive)
+        other_user.suppliers << supplier
+      end
+
+      it { is_expected.to be_falsy }
+    end
+
+    context 'when one supplier has multiple active users and another has only one' do
+      before do
+        supplier1 = FactoryBot.create(:supplier)
+        user.suppliers << supplier1
+        other_user1 = FactoryBot.create(:user)
+        other_user1.suppliers << supplier1
+
+        supplier2 = FactoryBot.create(:supplier)
+        user.suppliers << supplier2
+      end
+
+      it { is_expected.to be_falsy }
+    end
+  end
+
   describe '.search' do
     let!(:bob) { FactoryBot.create(:user, name: 'Bob Booker', email: 'bob@sheffield.com') }
     let!(:bobby) { FactoryBot.create(:user, name: 'Bobby Brown', email: 'bobby_b_66@hotmail.com') }
