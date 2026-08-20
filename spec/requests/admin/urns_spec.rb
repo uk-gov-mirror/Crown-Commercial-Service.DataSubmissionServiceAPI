@@ -11,6 +11,60 @@ RSpec.describe 'Admin URNs', type: :request do
   end
 
   describe 'GET /admin/urns' do
+    let!(:active_customer) do
+      create(:customer, urn: '123', name: 'Active Customer One', postcode: 'AB1 2CD', sector: :central_government)
+    end
+
+    let!(:inactive_customer) do
+      create(:inactive_customer, inactive_urn: '456', inactive_customer_name: 'Inactive Customer ltd', replacement_urn: '789', replacement_customer_name: 'Replacement Customer', replacement_post_code: 'EF4 5GH')
+    end
+
+    it 'renders the active and inactive URN tabs' do
+      get admin_urns_path
+
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include('Active URNs')
+      expect(response.body).to include('Inactive URNs')
+      expect(response.body).to include('Download Active URN list')
+    end
+
+    it 'shows active customers' do
+      get admin_urns_path
+
+      expect(response.body).to include(active_customer.name)
+      expect(response.body).to include(active_customer.urn.to_s)
+      expect(response.body).to include(active_customer.postcode)
+    end
+
+    it 'shows inactive customers' do
+      get admin_urns_path
+
+      expect(response.body).to include(inactive_customer.inactive_customer_name)
+      expect(response.body).to include(inactive_customer.inactive_urn.to_s)
+      expect(response.body).to include(inactive_customer.replacement_customer_name)
+      expect(response.body).to include(inactive_customer.replacement_urn.to_s)
+    end
+
+    it 'filters active customers independently' do
+      other_active_customer = create(:customer, urn: '999', name: 'Other Active Customer', postcode: 'XY1 2ZQ')
+
+      get admin_urns_path, params: { active_search: 'Other Active Customer' }
+
+      expect(response.body).to include(other_active_customer.name)
+      expect(response.body).not_to include(active_customer.name)
+      expect(response.body).to include(inactive_customer.inactive_customer_name)
+    end
+
+    it 'filters inactive customers independently' do
+      other_inactive_customer = create(:inactive_customer, inactive_urn: '888', inactive_customer_name: 'Other Inactive Customer', replacement_urn: '777', replacement_customer_name: 'Other Replacement Customer', replacement_post_code: 'GH1 2IJ')
+
+      get admin_urns_path, params: { inactive_search: 'Other Inactive Customer' }
+
+      expect(response.body).to include(other_inactive_customer.inactive_customer_name)
+      expect(response.body).not_to include(inactive_customer.inactive_customer_name)
+      expect(response.body).to include(active_customer.name)
+    end
+
     it 'renders the URN search page' do
       get admin_urns_path
 

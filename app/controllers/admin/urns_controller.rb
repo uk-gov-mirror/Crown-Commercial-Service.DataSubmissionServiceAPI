@@ -2,9 +2,23 @@ require 'csv'
 
 class Admin::UrnsController < AdminController
   def index
-    @search = params[:search].to_s.strip
+    @active_search = params[:active_search].to_s.strip
+    @inactive_search = params[:inactive_search].to_s.strip
 
-    @customers = Customer.where(deleted: false).order(:name).search(@search).page(params[:page])
+    @customers = Customer
+                  .where(deleted: false)
+                  .search(@active_search)
+                  .order(:name)
+                  .page(params[:active_page])
+    @inactive_customers = InactiveCustomer
+                          .search(@inactive_search)
+                          .order(date_made_inactive: :desc)
+                          .page(params[:inactive_page])
+
+    respond_to do |format|
+      format.html
+      format.js
+    end
   end
 
   def download
