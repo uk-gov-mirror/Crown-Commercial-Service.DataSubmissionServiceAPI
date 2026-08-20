@@ -7,8 +7,14 @@ RSpec.describe InactiveCustomer do
   it { is_expected.to validate_uniqueness_of(:inactive_urn) }
 
   describe '.search' do
-    let!(:inactive_customer1) { FactoryBot.create(:inactive_customer, inactive_urn: 123, inactive_customer_name: 'Customer One', replacement_urn: 456, replacement_customer_name: 'Replacement One', replacement_post_code: 'AB12 3CD') }
-    let!(:inactive_customer2) { FactoryBot.create(:inactive_customer, inactive_urn: 789, inactive_customer_name: 'Customer Two', replacement_urn: 101, replacement_customer_name: 'Replacement Two', replacement_post_code: 'EF45 6GH') }
+    let!(:inactive_customer1) do
+      FactoryBot.create(:inactive_customer, inactive_urn: 123, inactive_customer_name: 'Customer One',
+     replacement_urn: 456, replacement_customer_name: 'Replacement One', replacement_post_code: 'AB12 3CD')
+    end
+    let!(:inactive_customer2) do
+      FactoryBot.create(:inactive_customer, inactive_urn: 789, inactive_customer_name: 'Customer Two',
+      replacement_urn: 101, replacement_customer_name: 'Replacement Two', replacement_post_code: 'EF45 6GH')
+    end
 
     context 'when query is blank' do
       it 'returns all inactive customers' do

@@ -16,7 +16,8 @@ RSpec.describe 'Admin URNs', type: :request do
     end
 
     let!(:inactive_customer) do
-      create(:inactive_customer, inactive_urn: '456', inactive_customer_name: 'Inactive Customer ltd', replacement_urn: '789', replacement_customer_name: 'Replacement Customer', replacement_post_code: 'EF4 5GH')
+      create(:inactive_customer, inactive_urn: '456', inactive_customer_name: 'Inactive Customer ltd',
+replacement_urn: '789', replacement_customer_name: 'Replacement Customer', replacement_post_code: 'EF4 5GH')
     end
 
     it 'renders the active and inactive URN tabs' do
@@ -56,7 +57,9 @@ RSpec.describe 'Admin URNs', type: :request do
     end
 
     it 'filters inactive customers independently' do
-      other_inactive_customer = create(:inactive_customer, inactive_urn: '888', inactive_customer_name: 'Other Inactive Customer', replacement_urn: '777', replacement_customer_name: 'Other Replacement Customer', replacement_post_code: 'GH1 2IJ')
+      other_inactive_customer = create(:inactive_customer, inactive_urn: '888',
+inactive_customer_name: 'Other Inactive Customer', replacement_urn: '777',
+replacement_customer_name: 'Other Replacement Customer', replacement_post_code: 'GH1 2IJ')
 
       get admin_urns_path, params: { inactive_search: 'Other Inactive Customer' }
 
