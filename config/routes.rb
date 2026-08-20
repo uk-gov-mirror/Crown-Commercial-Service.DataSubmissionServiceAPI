@@ -25,6 +25,7 @@ Rails.application.routes.draw do
       collection do
         patch :update_name
         patch :update_email
+        patch :deactivate
         get :user_auth_logs
       end
     end
