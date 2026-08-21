@@ -38,7 +38,7 @@
                 = inactive_customer.replacement_customer_name 
                 %br/
                 %small
-                  = inactive_customer.replacement_urn
+                  = inactive_customer.replacement_urn unless inactive_customer.replacement_urn.zero?
               %td.govuk-table__cell= inactive_customer.replacement_post_code
               %td.govuk-table__cell= inactive_customer.replacement_status
       %nav.pagination.ccs-pagination{"aria-label" => "Inactive URN pagination", :role => "navigation"}
