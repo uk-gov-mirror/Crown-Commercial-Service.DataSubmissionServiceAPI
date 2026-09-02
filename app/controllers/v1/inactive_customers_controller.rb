@@ -1,8 +1,8 @@
 class V1::InactiveCustomersController < ApiController
   def index
     inactive_customers = InactiveCustomer
-                        .order(date_made_inactive: :desc)
-                        .search(params.dig(:filter, :search))
+                         .order(date_made_inactive: :desc)
+                         .search(params.dig(:filter, :search))
 
     page_number = params.dig(:page, :page) || 1
     total_customers = inactive_customers.count
