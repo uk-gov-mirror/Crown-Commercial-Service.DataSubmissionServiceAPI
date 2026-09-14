@@ -9,6 +9,13 @@ class DeactivateUser
     result = Result.new(true)
 
     User.transaction do
+      lock_linked_suppliers!
+
+      unless user.can_deactivate?
+        result.success = false
+        raise ActiveRecord::Rollback
+      end
+
       begin
         DeleteUserInAuth0.new(user: user).call
       rescue Auth0::Exception
@@ -16,9 +23,19 @@ class DeactivateUser
         Rails.logger.error("Error adding user #{user.email} to Auth0 during DeactivateUser")
         raise ActiveRecord::Rollback
       end
-      user.update(auth_id: nil)
+
+      unless user.update(auth_id: nil)
+        result.success = false
+        raise ActiveRecord::Rollback
+      end
     end
 
     result
+  end
+
+  private
+
+  def lock_linked_suppliers!
+    user.suppliers.lock.load
   end
 end

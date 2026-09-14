@@ -6,6 +6,7 @@ RSpec.describe Offboard::DeactivateUsers do
   end
 
   let!(:user) { FactoryBot.create(:user, name: 'User One', email: 'email_one@ccs.co.uk', suppliers: [supplier]) }
+  let!(:user_two) { FactoryBot.create(:user, name: 'User Two', email: 'email_two@ccs.co.uk', suppliers: [supplier]) }
 
   before do
     stub_auth0_token_request

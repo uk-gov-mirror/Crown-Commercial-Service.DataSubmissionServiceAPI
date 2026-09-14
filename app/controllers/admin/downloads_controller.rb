@@ -34,7 +34,7 @@ filename: "customer_effort_scores-#{@from_date.to_date}-#{@to_date.to_date}.csv"
 
   def task_notification_list(file)
     case params[:id]
-    when 'late', 'overdue'
+    when 'late', 'duetoday', 'overdue'
       Task::OverdueUserNotificationList.new(month: latest_period.month, year: latest_period.year, output: file)
     when 'due'
       Task::AnticipatedUserNotificationList.new(month: current_date.month, year: current_date.year, output: file)
@@ -65,6 +65,6 @@ filename: "customer_effort_scores-#{@from_date.to_date}-#{@to_date.to_date}.csv"
   end
 
   def catch_unrecognised_download
-    head(:not_found) unless %w[due late overdue unfinished].include?(params[:id])
+    head(:not_found) unless %w[due duetoday late overdue unfinished].include?(params[:id])
   end
 end

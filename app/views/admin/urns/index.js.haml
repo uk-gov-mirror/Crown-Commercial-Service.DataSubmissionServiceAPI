@@ -1,0 +1,8 @@
+-if params[:active_page] || params.key?(:active_search)
+  $('#active-customers-table').html("#{j (render partial: 'active_customers', locals: {customers: @customers})}")
+  $('#active-customers-pagination').html("#{j (paginate(@customers, :param_name => "active_page", :remote => true).to_s)}");
+  $('#active-customers-pagination-summary').html("#{j (page_entries_info(@customers, entry_name: "customer").to_s)}");
+-if params[:inactive_page] || params.key?(:inactive_search)
+  $('#inactive-customers-table').html("#{j (render partial: 'inactive_customers', locals: {inactive_customers: @inactive_customers})}")
+  $('#inactive-customers-pagination').html("#{j (paginate(@inactive_customers, :param_name => "inactive_page", :remote => true).to_s)}");
+  $('#inactive-customers-pagination-summary').html("#{j (page_entries_info(@inactive_customers, entry_name: "inactive customer").to_s)}");

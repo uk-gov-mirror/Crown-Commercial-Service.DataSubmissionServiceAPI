@@ -40,4 +40,10 @@ class User < ApplicationRecord
   def active?
     !auth_id.nil?
   end
+
+  def can_deactivate?
+    suppliers.all? do |supplier|
+      supplier.active_users.where.not(id: id).exists?
+    end
+  end
 end

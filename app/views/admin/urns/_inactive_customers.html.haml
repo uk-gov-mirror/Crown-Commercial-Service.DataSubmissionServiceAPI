@@ -1,0 +1,50 @@
+.govuk-grid-row
+  .govuk-grid-column-two-thirds
+    %h3.govuk-heading-s Search
+        
+    = form_with url: admin_urns_path, method: :get, local: false do
+      .ccs-search-form-group
+        %label.govuk-label.govuk-visually-hidden{for: 'inactive-search'} 
+          Search inactive URNs
+        %input#inactive-search{
+          name: 'inactive_search', 
+          type: 'text', 
+          value: @inactive_search, 
+          class: ['govuk-!-width-two-thirds', 'govuk-input']
+          }
+        %button#inactive-search-button.govuk-button Search
+
+.govuk-grid-row
+  .govuk-grid-column-full
+    - if @inactive_customers.any?
+      %table.govuk-table{:class => 'govuk-!-margin-top-7'}
+        %thead.govuk-table__head
+          %tr.govuk-table__row
+            %th.govuk-table__header Inactive Customer
+            %th.govuk-table__header Inactive Date
+            %th.govuk-table__header Replacement Customer
+            %th.govuk-table__header Post Code
+            %th.govuk-table__header Replacement Status
+        %tbody.govuk-table__body
+          - @inactive_customers.each do |inactive_customer|
+            %tr.govuk-table__row
+              %td.govuk-table__cell
+                = inactive_customer.inactive_customer_name
+                %br/
+                %small
+                  = inactive_customer.inactive_urn
+              %td.govuk-table__cell= inactive_customer.date_made_inactive
+              %td.govuk-table__cell
+                = inactive_customer.replacement_customer_name 
+                %br/
+                %small
+                  = inactive_customer.replacement_urn unless inactive_customer.replacement_urn.zero?
+              %td.govuk-table__cell= inactive_customer.replacement_post_code
+              %td.govuk-table__cell= inactive_customer.replacement_status
+      %nav.pagination.ccs-pagination{"aria-label" => "Inactive URN pagination", :role => "navigation"}
+        #inactive-customers-pagination-summary.ccs-pagination__summary= page_entries_info @inactive_customers, entry_name: "inactive customer"
+        #inactive-customers-pagination= paginate @inactive_customers, param_name: :inactive_page, params: {active_search: @inactive_search}, remote: true
+
+    - elsif @inactive_search.present?
+      %p
+        No inactive customers found for ‘#{@inactive_search}’.

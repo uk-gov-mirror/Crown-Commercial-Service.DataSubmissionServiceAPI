@@ -25,6 +25,7 @@ Rails.application.routes.draw do
       collection do
         patch :update_name
         patch :update_email
+        patch :deactivate
         get :user_auth_logs
       end
     end
@@ -66,6 +67,8 @@ as: :cancel_pending_email_change
     resources :agreements, only: :index
 
     resources :customers, only: :index
+
+    resources :inactive_customers, only: :index
 
     resource :customer_effort_scores, only: :create
 

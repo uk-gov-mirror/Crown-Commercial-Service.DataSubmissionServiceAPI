@@ -22,7 +22,7 @@ RSpec.describe 'Admin Downloads', type: :request do
       expect(response.body).to include(admin_download_path(:overdue))
       expect(response.body).to include('Management information is late')
       expect(response.body).to include(admin_download_path(:late))
-      expect(response.body).to include('Management information submission is unfinished')
+      expect(response.body).to include('Management information is incomplete/unfinished')
       expect(response.body).to include(admin_download_path(:unfinished))
     end
   end

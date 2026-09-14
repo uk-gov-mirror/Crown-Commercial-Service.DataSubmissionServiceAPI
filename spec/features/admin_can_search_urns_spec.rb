@@ -20,8 +20,8 @@ sector: :wider_public_sector)
 
   scenario 'Searching by customer name' do
     visit admin_urns_path
-    fill_in 'Search', with: 'One'
-    click_button 'Search'
+    fill_in 'active-search', with: 'One'
+    click_button 'active-search-button'
     expect(page).to have_content '123'
     expect(page).to_not have_content '456'
     expect(page).to_not have_content '789'
@@ -29,8 +29,8 @@ sector: :wider_public_sector)
 
   scenario 'Searching by URN' do
     visit admin_urns_path
-    fill_in 'Search', with: '456'
-    click_button 'Search'
+    fill_in 'active-search', with: '456'
+    click_button 'active-search-button'
     expect(page).to_not have_content '123'
     expect(page).to have_content '456'
     expect(page).to_not have_content '789'
@@ -38,8 +38,8 @@ sector: :wider_public_sector)
 
   scenario 'Searching by postcode' do
     visit admin_urns_path
-    fill_in 'Search', with: 'IJ5 6KL'
-    click_button 'Search'
+    fill_in 'active-search', with: 'IJ5 6KL'
+    click_button 'active-search-button'
     expect(page).to_not have_content '123'
     expect(page).to_not have_content '456'
     expect(page).to have_content '789'
