@@ -1,5 +1,14 @@
 # Change Log
 
+## [release-178] - 2026-09-14
+
+- NRMI-419: new notification page copy update
+- NRMI-420: QOL update to admin downloads
+- NRMI-41: self serve user deactivate
+- NRMI-367: searchable inactive URNs list
+- NRMI-430: snyk fix upgrade activestorage
+- NRMI-164: searchable inactive URN list for suppliers
+
 ## [release-177] - 2026-07-13
 
 - [Snyk] Security upgrade rails from 8.1.2 to 8.1.2.1
@@ -1194,6 +1203,7 @@ this should have been released in release 45 but wasn't actually merged
 
 Initial release
 
+[release-178]: https://github.com/Crown-Commercial-Service/DataSubmissionServiceAPI/compare/release-177...release-178
 [release-177]: https://github.com/Crown-Commercial-Service/DataSubmissionServiceAPI/compare/release-176...release-177
 [release-176]: https://github.com/Crown-Commercial-Service/DataSubmissionServiceAPI/compare/release-175...release-176
 [release-175]: https://github.com/Crown-Commercial-Service/DataSubmissionServiceAPI/compare/release-174...release-175
